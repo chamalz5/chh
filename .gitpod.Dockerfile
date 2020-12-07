@@ -1,26 +1,19 @@
-FROM gitpod/workspace-full-vnc
+FROM debian:latest
+
+# To avoid bricked workspaces (https://github.com/gitpod-io/gitpod/issues/1171)
+ARG DEBIAN_FRONTEND=noninteractive
+
+USER root
+
+RUN true \
+	&& apt install -y \
+		novnc \
+		chromium
 
 USER gitpod
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-# Install Cypress dependencies.
-RUN sudo apt-get update \
- && sudo apt-get install -yq \
-   libgtk2.0-0 \
-   libgtk-3-0 \
-   libnotify-dev \
-   libgconf-2-4 \
-   libnss3 \
-   libxss1 \
-   libasound2 \
-   libxtst6 \
-   xauth \
-   xvfb \
- && sudo rm -rf /var/lib/apt/lists/*
-
-# Install Chromium
-RUN sudo apt-get update -q \
- && sudo apt-get install -yq \
-   chromium-browser \
+# Otherwise this outputs 'gitpod@ws-ce281d58-997b-44b8-9107-3f2da7feede3:/workspace/gitpod-tests1$'' in terminal
+RUN printf '%s\n' \
+	"export PS1='\[\e]0;\u \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00m\] \[\033[01;34m\]\w \$ \[\033[00m\]'" \
+	>> "$HOME/.bashrc"
  && sudo rm -rf /var/lib/apt/lists/*
